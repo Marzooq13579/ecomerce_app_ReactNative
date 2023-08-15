@@ -5,9 +5,12 @@ const crypto = require("crypto");
 const nodemailer = require("nodemailer");
 
 const app = express();
-const port = 8000;
+const port = process.env.PORT;
 const cors = require("cors");
 const jwt = require("jsonwebtoken")
+
+
+require('dotenv').config();
 
 app.use(cors());
 
@@ -18,7 +21,7 @@ app.use(bodyParser.json());
 
 mongoose
   .connect(
-    "mongodb+srv://Marzooq:securePass@cluster0.u6xslkm.mongodb.net/ecommerce?retryWrites=true&w=majority",
+    process.env.MONGO_URI ,
     {
       useNewUrlParser: true,
       useunifiedTopology: true,
@@ -32,5 +35,5 @@ mongoose
   });
 
 app.listen(port, () => {
-  console.log(`server is running on port ${port}`);
+  console.log(`server is running on port ${process.env.PORT}`);
 });
