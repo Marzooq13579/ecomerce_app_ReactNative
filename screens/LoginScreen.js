@@ -8,12 +8,18 @@ import {
   Pressable,
 } from "react-native";
 import React, { useState } from "react";
-import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialIcons, AntDesign } from "@expo/vector-icons";
+import { useNavigation } from "@react-navigation/native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const LoginScreen = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
+  const navigation = useNavigation();
+
+
+
   return (
     <SafeAreaView
       style={{ flex: 1, backgroundColor: "white", alignItems: "center" }}
@@ -132,7 +138,7 @@ const LoginScreen = () => {
             <Text style={{textAlign:"center",color:"white",fontSize:16,fontWeight:"bold"}}>Login</Text>
           </Pressable>
 
-          <Pressable style={{marginTop:15}}>
+          <Pressable onPress={()=> navigation.navigate("Register")} style={{marginTop:15}}>
             <Text style={{textAlign:"center",color:"gray",fontSize:16}}>Dont have an account? Sign Up</Text>
           </Pressable>
         </View>
