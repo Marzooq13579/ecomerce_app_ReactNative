@@ -35,6 +35,12 @@ app.listen(process.env.PORT, () => {
 const User = require("./models/user");
 const Order = require("./models/order");
 
+const generateSecretKey = () => {
+  return crypto.randomBytes(32).toString("hex");
+};
+
+const secretKey = generateSecretKey();
+
 //send verification mail
 
 async function sendVerificationEmail(email, token) {
@@ -67,13 +73,13 @@ async function sendVerificationEmail(email, token) {
   }
 }
 
-
 app.get("/test", async (req, res) => {
-  res.send("Hello")
-})
+  res.send("Hello");
+});
 
+//Register Endpoint
 app.post("/register", async (req, res) => {
-  console.log("register request recieved")
+  console.log("register request recieved");
   try {
     const { name, email, password } = req.body;
 
@@ -102,7 +108,7 @@ app.post("/register", async (req, res) => {
     //send verification mail
 
     sendVerificationEmail(newUser.email, newUser.verificationToken);
-    
+
     res.status(201).json({
       message:
         "Registration successful. Please check your email for verification.",
@@ -116,7 +122,7 @@ app.post("/register", async (req, res) => {
 //Verify Token Endpoint
 
 app.get("/verify/:token", async (req, res) => {
-  console.log("verify token endpoint")
+  console.log("verify token endpoint");
   try {
     const token = req.params.token;
 
@@ -124,21 +130,47 @@ app.get("/verify/:token", async (req, res) => {
 
     const user = await User.findOne({ verificationToken: token });
 
-    if(!user){
-      return res.status(404).json({message:"Invalid verification token"})
+    if (!user) {
+      return res.status(404).json({ message: "Invalid verification token" });
     }
 
     //mark the user as verified
 
-    user.verified = true
+    user.verified = true;
     user.verificationToken = undefined;
 
     await user.save();
 
-    res.status(200).json({message: "Email verified Successfully"})
-
-  
+    res.status(200).json({ message: "Email verified Successfully" });
   } catch (error) {
     res.status(500).json({ message: "Email Verification Failed" });
+  }
+});
+
+//Login Endpoint
+app.post("/login", async (req, res) => {
+  console.log("login request recieved")
+  try {
+    const { email, password } = req.body;
+
+    //check if the user exists
+
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(401).json({ message: "User does not exist" });
+    }
+
+    if (user.password !== password) {
+      return res.status(401).json({ message: "Invalid email or password" });
+    }
+
+    //Generate Token
+    const token = jwt.sign({ userId: user.id }, secretKey);
+
+    res.status(200).json({ token });
+  } catch (err) {
+    console.log("Err is", err);
+    res.status(500).json({ message: "Login Failed" });
   }
 });
