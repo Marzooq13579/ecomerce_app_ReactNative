@@ -13,12 +13,25 @@ import { useNavigation } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useEffect } from "react/cjs/react.production.min";
 
 const LoginScreen = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const navigation = useNavigation();
+
+  useEffect(() => {
+    const checkLoginStatus = async () => {
+      try {
+        const token = await AsyncStorage.getItem("authToken");
+        if (token) {
+          navigation.replace("Main");
+        }
+      } catch (err) {}
+    };
+    checkLoginStatus();
+  }, []);
 
   function handleLogin() {
     const user = {
@@ -32,7 +45,7 @@ const LoginScreen = () => {
         console.log("response", response);
         const token = response.data.token;
         AsyncStorage.setItem("authToken", token);
-        navigation.replace("Home");
+        navigation.replace("Main");
       })
       .catch((err) => {
         Alert.alert("Login Error,Invalid Credentials");
