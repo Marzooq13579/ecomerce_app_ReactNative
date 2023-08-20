@@ -7,13 +7,13 @@ import {
   TextInput,
   Pressable,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import { MaterialIcons, AntDesign } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useEffect } from "react/cjs/react.production.min";
+
 
 const LoginScreen = () => {
   const [email, setEmail] = useState("");
@@ -28,7 +28,9 @@ const LoginScreen = () => {
         if (token) {
           navigation.replace("Main");
         }
-      } catch (err) {}
+      } catch (err) {
+        console.log("Error message",err)
+      }
     };
     checkLoginStatus();
   }, []);
